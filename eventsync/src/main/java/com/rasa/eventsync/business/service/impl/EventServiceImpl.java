@@ -74,24 +74,30 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Feedback addFeedback(Long eventId, Feedback feedback) {
-
         Event existingEvent = findEventById(eventId)
             .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
-
 
         String sentiment = sentimentService.analyzeSentiment(feedback.getText());
         feedback.setSentiment(sentiment);
 
+
         FeedbackDAO feedbackDAO = feedbackMapper.feedbackToDAO(feedback);
+
+        EventDAO eventDAO = eventRepository.findById(eventId)
+            .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
+        feedbackDAO.setEvent(eventDAO);
+
         FeedbackDAO savedDAO = feedbackRepository.save(feedbackDAO);
 
         Feedback savedFeedback = feedbackMapper.feedbackDAOToFeedback(savedDAO);
+
         existingEvent.getFeedbackList().add(savedFeedback);
 
         log.info("Feedback added with ID: {} and sentiment: {}", savedDAO.getId(), sentiment);
 
         return savedFeedback;
     }
+
     @Override
     public FeedbackSummary getFeedbackSummary(Long eventId) {
         Event event = findEventById(eventId)

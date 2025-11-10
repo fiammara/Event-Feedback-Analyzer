@@ -20,9 +20,8 @@ public class Feedback {
     @Schema(description = "The unique id of the feedback")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    @Schema(description = "Event related to feedback")
+    private Long eventId;
 
     @Schema(description = "Feedback text")
     private String text;

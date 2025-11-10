@@ -8,8 +8,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,23 +28,39 @@ public class SentimentServiceImpl implements SentimentService {
 
     @Override
     public String analyzeSentiment(String text) {
-        String url = "https://api-inference.huggingface.co/models/cardiffnlp/twitter-roberta-base-sentiment";
+        String url = "https://router.huggingface.co/hf-inference/models/cardiffnlp/twitter-xlm-roberta-base-sentiment";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + hfApiToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+
         Map<String, Object> request = Map.of("inputs", text);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
 
-        ResponseEntity<List> response = restTemplate.exchange(url, HttpMethod.POST, entity, List.class);
+        try {
 
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && !response.getBody().isEmpty()) {
-            Map<String, Object> topPrediction = (Map<String, Object>) response.getBody().get(0);
-            return (String) topPrediction.get("label");
+            Object responseBody = restTemplate.postForObject(url, entity, Object.class);
+
+            if (responseBody instanceof List outerList && !outerList.isEmpty()) {
+
+                Object firstItem = outerList.get(0);
+                if (firstItem instanceof List predictionsList && !predictionsList.isEmpty()) {
+                    Map<String, Object> topPrediction = (Map<String, Object>) ((List<?>) firstItem).get(0);
+                    return (String) topPrediction.get("label");
+                } else if (firstItem instanceof Map topPredictionMap) {
+                    return (String) topPredictionMap.get("label");
+                }
+            }
+
+            throw new RuntimeException("Hugging Face sentiment analysis returned empty result");
+        } catch (HttpClientErrorException e) {
+            System.out.println("HTTP error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
+            throw e;
+        } catch (Exception e) {
+            System.out.println("General error: " + e.getMessage());
+            throw e;
         }
-
-        throw new RuntimeException("Hugging Face sentiment analysis failed");
-    }
-}
+    }}
 
