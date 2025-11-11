@@ -28,12 +28,12 @@ export default function FeedbackForm({ eventId, onFeedbackAdded }) {
         placeholder="Write feedback..."
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className="border p-2 mb-2 w-full"
+        className="border p-2 mb-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-green-200"
         disabled={loading}
       />
       <button
         type="submit"
-        className={`px-3 py-1 rounded text-white ${loading ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'}`}
+        className={loading ? 'btn-disabled' : 'btn btn-primary'}
         disabled={loading}
       >
         {loading ? 'Adding...' : 'Submit Feedback'}

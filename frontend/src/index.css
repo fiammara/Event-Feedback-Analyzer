@@ -1,11 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Shared button utilities */
+.btn {
+  @apply inline-flex items-center justify-center px-3 py-1 rounded-md text-sm font-medium shadow-sm transition-colors duration-150;
+}
+.btn-primary {
+  /* lighter slate to match UI */
+  @apply bg-slate-500 text-white hover:bg-slate-600;
+}
+.btn-disabled {
+  @apply bg-gray-400 cursor-not-allowed text-white;
+}
+
+npm
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,28 +38,20 @@ a:hover {
 }
 
 body {
+  @apply font-sans text-gray-900 bg-gradient-to-b from-blue-50 to-blue-100;
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  place-items: center;
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  @apply text-5xl font-extrabold;
 }
-
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+  @apply rounded-md border border-transparent px-4 py-2 text-base font-medium bg-gray-900 text-white hover:border-blue-500;
 }
 button:hover {
   border-color: #646cff;
@@ -66,3 +73,5 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+

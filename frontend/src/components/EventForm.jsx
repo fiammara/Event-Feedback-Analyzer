@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createEvent } from '../api/api';
 
-export default function EventForm({ onEventAdded }) {
+export default function EventForm({ onEventAdded, compact = false }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
@@ -28,33 +28,34 @@ export default function EventForm({ onEventAdded }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mb-6 p-4 border rounded bg-white max-w-2xl mx-auto"
+      className={`mb-6 border bg-white ${compact ? 'p-3 max-w-full' : 'p-4 max-w-2xl mx-auto'} rounded-lg`}
     >
-      <h2 className="font-bold mb-2">Add New Event</h2>
+      {!compact && <h2 className="font-bold mb-2 text-xl">Add New Event</h2>}
       <input
         type="text"
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="border p-2 mb-2 w-full"
+        className="w-full mb-2 p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
         disabled={loading}
       />
       <textarea
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        className="border p-2 mb-2 w-full"
+        className="w-full mb-3 p-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200"
+        rows={compact ? 3 : 4}
         disabled={loading}
       />
-      <button
-        type="submit"
-        className={`px-4 py-2 rounded text-white ${
-          loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-        }`}
-        disabled={loading}
-      >
-        {loading ? 'Adding...' : 'Add Event'}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className={loading ? 'btn-disabled' : 'btn btn-primary'}
+          disabled={loading}
+        >
+          {loading ? 'Adding...' : (compact ? 'Add' : 'Add Event')}
+        </button>
+      </div>
     </form>
   );
 }
