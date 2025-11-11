@@ -21,23 +21,26 @@ import java.util.Map;
 public class SentimentServiceImpl implements SentimentService {
 
     private final RestTemplate restTemplate;
-    private final String hfApiToken;
-
+    private String hfApiToken;
 
     public SentimentServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
 
-        Dotenv dotenv = Dotenv.load();
-        this.hfApiToken = dotenv.get("HUGGINGFACE_TOKEN");
-
-        if (hfApiToken == null || hfApiToken.isEmpty()) {
-            throw new IllegalStateException("HUGGINGFACE_TOKEN not found in .env");
+    private void ensureToken() {
+        if (hfApiToken == null) {
+            Dotenv dotenv = Dotenv.load();
+            hfApiToken = dotenv.get("HUGGINGFACE_TOKEN");
+            if (hfApiToken == null || hfApiToken.isEmpty()) {
+                throw new IllegalStateException("HUGGINGFACE_TOKEN not found in .env");
+            }
         }
     }
 
 
     @Override
     public String analyzeSentiment(String text) {
+        ensureToken();
         String url = "https://router.huggingface.co/hf-inference/models/cardiffnlp/twitter-xlm-roberta-base-sentiment";
 
         HttpHeaders headers = new HttpHeaders();

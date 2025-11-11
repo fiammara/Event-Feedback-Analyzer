@@ -28,7 +28,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapStructMapper eventMapper;
     private final FeedbackMapStructMapper feedbackMapper;
     private final SentimentServiceImpl sentimentService;
-    private final RestTemplate restTemplate;
+
 
     private static final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
@@ -39,7 +39,6 @@ public class EventServiceImpl implements EventService {
         this.eventMapper = eventMapper;
         this.feedbackMapper = feedbackMapper;
         this.sentimentService = sentimentService;
-        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -74,31 +73,19 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Feedback addFeedback(Long eventId, Feedback feedback) {
-        // 1️⃣ Find the event
-        Event existingEvent = findEventById(eventId)
+        EventDAO eventDAO = eventRepository.findById(eventId)
             .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
 
-        // 2️⃣ Analyze sentiment
         String sentiment = sentimentService.analyzeSentiment(feedback.getText());
         feedback.setSentiment(sentiment);
 
-        // 3️⃣ Map to DAO and set event reference
         FeedbackDAO feedbackDAO = feedbackMapper.feedbackToDAO(feedback);
-        EventDAO eventDAO = eventRepository.findById(eventId)
-            .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
         feedbackDAO.setEvent(eventDAO);
 
-        // 4️⃣ Save feedback
         FeedbackDAO savedDAO = feedbackRepository.save(feedbackDAO);
-        Feedback savedFeedback = feedbackMapper.feedbackDAOToFeedback(savedDAO);
+        log.info("Feedback added to event {} with sentiment {}", eventId, sentiment);
 
-        // 5️⃣ Add to event's feedback list (optional in-memory update)
-        existingEvent.getFeedbackList().add(savedFeedback);
-
-        log.info("Feedback added with ID: {} and sentiment: {}", savedDAO.getId(), sentiment);
-
-        // 6️⃣ Return the saved feedback only
-        return savedFeedback;
+        return feedbackMapper.feedbackDAOToFeedback(savedDAO);
     }
 
 
@@ -131,5 +118,4 @@ public class EventServiceImpl implements EventService {
             completeSummary
         );
     }
-
 }

@@ -95,7 +95,7 @@ export default function EventList({ newEvent }) {
   };
 
   if (loading) return <p className="text-center mt-10">Loading events...</p>;
-  if (!events.length) return <p className="text-center mt-10">No events available. Add one above!</p>;
+  if (!events.length) return <p className="text-center mt-10">No events available. Add them!</p>;
 
   return (
     <div className="mt-4 space-y-5 max-w-4xl mx-auto">

@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.rasa.eventsync.business.handlers.EventNotFoundException;
 import com.rasa.eventsync.business.mappers.EventMapStructMapper;
 import com.rasa.eventsync.business.mappers.FeedbackMapStructMapper;
 import com.rasa.eventsync.business.repository.EventRepository;
@@ -14,6 +15,7 @@ import com.rasa.eventsync.business.service.impl.EventServiceImpl;
 import com.rasa.eventsync.business.service.impl.SentimentServiceImpl;
 import com.rasa.eventsync.model.Event;
 import com.rasa.eventsync.model.Feedback;
+import com.rasa.eventsync.model.FeedbackSummary;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +28,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 
 @ExtendWith(MockitoExtension.class)
- class EventServiceTests {
+class EventServiceTests {
 
     @Mock
     private EventRepository eventRepository;
@@ -40,19 +42,19 @@ import java.util.ArrayList;
     @Mock
     private FeedbackMapStructMapper feedbackMapper;
 
+    @Mock
+    private SentimentServiceImpl sentimentService;
+
     @InjectMocks
     private EventServiceImpl eventService;
 
     private Event sampleEvent;
     private EventDAO sampleEventDAO;
     private Feedback sampleFeedback;
-    @Mock
-    private SentimentServiceImpl sentimentService;
     private FeedbackDAO sampleFeedbackDAO;
 
     @BeforeEach
     void setup() {
-
         sampleEvent = new Event();
         sampleEvent.setId(1L);
         sampleEvent.setTitle("Test Event");
@@ -64,33 +66,12 @@ import java.util.ArrayList;
         sampleEventDAO.setTitle("Test Event");
         sampleEventDAO.setDescription("Description");
 
-
         sampleFeedback = new Feedback();
         sampleFeedback.setText("Great event!");
 
         sampleFeedbackDAO = new FeedbackDAO();
         sampleFeedbackDAO.setId(10L);
     }
-
-
-    @Test
-    void addFeedback_shouldAddFeedbackToEvent() {
-        when(eventRepository.findById(1L)).thenReturn(Optional.of(sampleEventDAO));
-        when(feedbackMapper.feedbackToDAO(any(Feedback.class))).thenReturn(sampleFeedbackDAO);
-        when(feedbackRepository.save(sampleFeedbackDAO)).thenReturn(sampleFeedbackDAO);
-        when(feedbackMapper.feedbackDAOToFeedback(sampleFeedbackDAO)).thenReturn(sampleFeedback);
-        when(eventMapper.eventDAOToEvent(sampleEventDAO)).thenReturn(sampleEvent);
-
-        Feedback created = eventService.addFeedback(1L, sampleFeedback);
-
-        assertEquals("Great event!", created.getText());
-        assertTrue(sampleEvent.getFeedbackList().contains(created));
-
-        verify(feedbackRepository).save(sampleFeedbackDAO);
-        verify(feedbackMapper).feedbackToDAO(sampleFeedback);
-        verify(feedbackMapper).feedbackDAOToFeedback(sampleFeedbackDAO);
-    }
-
 
     @Test
     void createEvent_shouldReturnCreatedEvent() {
@@ -103,7 +84,6 @@ import java.util.ArrayList;
         assertEquals(sampleEvent.getTitle(), created.getTitle());
         verify(eventRepository).save(sampleEventDAO);
     }
-
 
     @Test
     void findEventById_shouldReturnEventIfExists() {
@@ -130,12 +110,6 @@ import java.util.ArrayList;
 
     @Test
     void addFeedback_shouldAnalyzeSentimentAndSaveFeedback() {
-
-        Event sampleEvent = new Event();
-        sampleEvent.setId(1L);
-        sampleEvent.setTitle("Sample Event");
-        sampleEvent.setDescription("Test event");
-
         Feedback feedback = new Feedback();
         feedback.setText("I love this event!");
 
@@ -145,25 +119,66 @@ import java.util.ArrayList;
         Feedback savedFeedback = new Feedback();
         savedFeedback.setId(100L);
         savedFeedback.setText(feedback.getText());
-        savedFeedback.setSentiment("POS");
+        savedFeedback.setSentiment("POSITIVE");
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(sampleEventDAO));
-        when(eventMapper.eventDAOToEvent(any(EventDAO.class))).thenReturn(sampleEvent);
-
-        when(sentimentService.analyzeSentiment(feedback.getText())).thenReturn("POS");
+        when(sentimentService.analyzeSentiment(feedback.getText())).thenReturn("POSITIVE");
         when(feedbackMapper.feedbackToDAO(feedback)).thenReturn(feedbackDAO);
         when(feedbackRepository.save(feedbackDAO)).thenReturn(feedbackDAO);
         when(feedbackMapper.feedbackDAOToFeedback(feedbackDAO)).thenReturn(savedFeedback);
 
-
         Feedback result = eventService.addFeedback(1L, feedback);
 
         assertNotNull(result);
-        assertEquals("POS", result.getSentiment());
+        assertEquals("POSITIVE", result.getSentiment());
         assertEquals("I love this event!", result.getText());
-        assertTrue(sampleEvent.getFeedbackList().contains(savedFeedback));
 
-        verify(sentimentService, times(1)).analyzeSentiment(feedback.getText());
-        verify(feedbackRepository, times(1)).save(feedbackDAO);
+        verify(sentimentService).analyzeSentiment(feedback.getText());
+        verify(feedbackRepository).save(feedbackDAO);
+    }
+
+    @Test
+    void addFeedback_shouldThrowException_whenEventNotFound() {
+        when(eventRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Feedback feedback = new Feedback();
+        feedback.setText("Missing event test");
+
+        assertThrows(EventNotFoundException.class, () -> eventService.addFeedback(999L, feedback));
+
+        verify(eventRepository).findById(999L);
+        verifyNoInteractions(feedbackRepository);
+    }
+
+    @Test
+    void getFeedbackSummary_shouldReturnCorrectCounts() {
+        Feedback f1 = new Feedback(); f1.setSentiment("POSITIVE");
+        Feedback f2 = new Feedback(); f2.setSentiment("POSITIVE");
+        Feedback f3 = new Feedback(); f3.setSentiment("NEGATIVE");
+
+        Event event = new Event();
+        event.setId(1L);
+        event.setTitle("Event");
+        event.setFeedbackList(List.of(f1, f2, f3));
+
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(sampleEventDAO));
+        when(eventMapper.eventDAOToEvent(sampleEventDAO)).thenReturn(event);
+
+        FeedbackSummary summary = eventService.getFeedbackSummary(1L);
+
+        assertEquals(3, summary.getFeedbackCount());
+        assertEquals(2, summary.getSentimentSummary().get("POSITIVE"));
+        assertEquals(1, summary.getSentimentSummary().get("NEGATIVE"));
+        assertEquals(0, summary.getSentimentSummary().get("NEUTRAL"));
+    }
+
+    @Test
+    void getFeedbackSummary_shouldThrowException_whenEventNotFound() {
+        when(eventRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(EventNotFoundException.class, () -> eventService.getFeedbackSummary(999L));
+
+        verify(eventRepository).findById(999L);
     }
 }
+

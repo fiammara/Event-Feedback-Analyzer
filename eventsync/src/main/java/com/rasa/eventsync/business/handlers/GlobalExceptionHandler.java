@@ -67,5 +67,9 @@ public class GlobalExceptionHandler {
         String expectedType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
         return ResponseEntity.badRequest().body("Invalid value for parameter '" + param + "'. Expected type: " + expectedType);
     }
-
+    @ExceptionHandler(EventNotFoundException.class)
+    public ResponseEntity<String> handleEventNotFound(EventNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(ex.getMessage() != null ? ex.getMessage() : "Event not found");
+    }
 }

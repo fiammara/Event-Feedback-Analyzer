@@ -32,14 +32,13 @@ import java.util.Optional;
 @RequestMapping("/api/events")
 @CrossOrigin(origins = "http://localhost:5173")
 public class EventController {
-
+    private static final Logger log = LoggerFactory.getLogger(EventController.class);
     private final EventService eventService;
 
     public EventController(EventService eventService) {
         this.eventService = eventService;
     }
 
-    private static final Logger log = LoggerFactory.getLogger(EventController.class);
 
     @Operation(
         summary = "Find event by ID",
@@ -52,7 +51,7 @@ public class EventController {
         @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
         @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
     })
-    @GetMapping("/find/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(
         @Parameter(description = "ID of the event to retrieve", required = true)
         @PathVariable Long id) {
@@ -111,6 +110,12 @@ public class EventController {
 
     @PostMapping("/{eventId}/feedback")
     @Operation(summary = "Add feedback to an event", description = "Adds a new feedback to the specified event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = HTMLResponseMessages.HTTP_201),
+        @ApiResponse(responseCode = "400", description = HTMLResponseMessages.HTTP_400),
+        @ApiResponse(responseCode = "404", description = "Event not found"),
+        @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
+    })
     public ResponseEntity<Feedback> addFeedback(
         @PathVariable Long eventId,
         @Valid @RequestBody Feedback feedback) {
@@ -122,6 +127,11 @@ public class EventController {
 
     @GetMapping("/{eventId}/feedback/summary")
     @Operation(summary = "Get feedback count and sentiment summary for an event")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
+        @ApiResponse(responseCode = "404", description = "Event not found"),
+        @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
+    })
     public ResponseEntity<FeedbackSummary> getFeedbackSummary(@PathVariable Long eventId) {
 
         FeedbackSummary summary = eventService.getFeedbackSummary(eventId);
