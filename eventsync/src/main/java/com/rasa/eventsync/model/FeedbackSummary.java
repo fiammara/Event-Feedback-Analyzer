@@ -16,4 +16,10 @@ public class FeedbackSummary {
     private String eventTitle;
     private int feedbackCount;
     private Map<String, Integer> sentimentSummary;
+
+  /*  private int totalCount;
+    private int positiveCount;
+    private int negativeCount;
+    private int neutralCount;
+    private double averageSentiment; */
 }

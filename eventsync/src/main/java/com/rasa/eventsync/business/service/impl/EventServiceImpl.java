@@ -74,48 +74,61 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Feedback addFeedback(Long eventId, Feedback feedback) {
+        // 1️⃣ Find the event
         Event existingEvent = findEventById(eventId)
             .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
 
+        // 2️⃣ Analyze sentiment
         String sentiment = sentimentService.analyzeSentiment(feedback.getText());
         feedback.setSentiment(sentiment);
 
-
+        // 3️⃣ Map to DAO and set event reference
         FeedbackDAO feedbackDAO = feedbackMapper.feedbackToDAO(feedback);
-
         EventDAO eventDAO = eventRepository.findById(eventId)
             .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
         feedbackDAO.setEvent(eventDAO);
 
+        // 4️⃣ Save feedback
         FeedbackDAO savedDAO = feedbackRepository.save(feedbackDAO);
-
         Feedback savedFeedback = feedbackMapper.feedbackDAOToFeedback(savedDAO);
 
+        // 5️⃣ Add to event's feedback list (optional in-memory update)
         existingEvent.getFeedbackList().add(savedFeedback);
 
         log.info("Feedback added with ID: {} and sentiment: {}", savedDAO.getId(), sentiment);
 
+        // 6️⃣ Return the saved feedback only
         return savedFeedback;
     }
 
+
     @Override
     public FeedbackSummary getFeedbackSummary(Long eventId) {
+
         Event event = findEventById(eventId)
             .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
 
         List<Feedback> feedbackList = event.getFeedbackList();
+        log.info("Feedbacks found for event {}: {}", eventId, feedbackList.size());
 
-        Map<String, Integer> sentimentSummary = new HashMap<>();
+        Map<String, Integer> sentimentCounts = new HashMap<>();
         for (Feedback feedback : feedbackList) {
             String sentiment = feedback.getSentiment();
-            sentimentSummary.put(sentiment, sentimentSummary.getOrDefault(sentiment, 0) + 1);
+            sentimentCounts.put(sentiment, sentimentCounts.getOrDefault(sentiment, 0) + 1);
         }
+
+        Map<String, Integer> completeSummary = new HashMap<>();
+        completeSummary.put("POSITIVE", sentimentCounts.getOrDefault("POSITIVE", 0));
+        completeSummary.put("NEUTRAL", sentimentCounts.getOrDefault("NEUTRAL", 0));
+        completeSummary.put("NEGATIVE", sentimentCounts.getOrDefault("NEGATIVE", 0));
+
+        log.info("Sentiment summary (complete): {}", completeSummary);
 
         return new FeedbackSummary(
             event.getId(),
             event.getTitle(),
             feedbackList.size(),
-            sentimentSummary
+            completeSummary
         );
     }
 

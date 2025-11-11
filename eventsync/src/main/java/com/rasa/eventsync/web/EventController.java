@@ -123,6 +123,7 @@ public class EventController {
     @GetMapping("/{eventId}/feedback/summary")
     @Operation(summary = "Get feedback count and sentiment summary for an event")
     public ResponseEntity<FeedbackSummary> getFeedbackSummary(@PathVariable Long eventId) {
+
         FeedbackSummary summary = eventService.getFeedbackSummary(eventId);
         return ResponseEntity.ok(summary);
     }
