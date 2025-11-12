@@ -2,12 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Shared button utilities */
 .btn {
   @apply inline-flex items-center justify-center px-3 py-1 rounded-md text-sm font-medium shadow-sm transition-colors duration-150;
 }
 .btn-primary {
-  /* lighter slate to match UI */
+
   @apply bg-slate-500 text-white hover:bg-slate-600;
 }
 .btn-disabled {

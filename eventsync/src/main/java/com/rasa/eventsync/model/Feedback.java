@@ -1,9 +1,6 @@
 package com.rasa.eventsync.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +17,7 @@ public class Feedback {
     @Schema(description = "The unique id of the feedback")
     private Long id;
 
-    @Schema(description = "Event related to feedback")
+    @Schema(description = "Id of event, related to the feedback")
     private Long eventId;
 
     @Schema(description = "Feedback text")
@@ -29,5 +26,6 @@ public class Feedback {
     @Schema(description = "Sentiment classification of the feedback")
     private String sentiment;
 
+    @Schema(description = "Time of a feedback creation")
     private LocalDateTime createdAt = LocalDateTime.now();
 }

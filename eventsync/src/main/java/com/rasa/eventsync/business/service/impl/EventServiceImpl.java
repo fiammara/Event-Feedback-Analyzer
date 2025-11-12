@@ -14,7 +14,6 @@ import com.rasa.eventsync.model.FeedbackSummary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +22,8 @@ import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
+
+    private static final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
     private final EventRepository eventRepository;
     private final FeedbackRepository feedbackRepository;
     private final EventMapStructMapper eventMapper;
@@ -30,10 +31,8 @@ public class EventServiceImpl implements EventService {
     private final SentimentServiceImpl sentimentService;
 
 
-    private static final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
-
     public EventServiceImpl(EventRepository eventRepository,
-                            FeedbackRepository feedbackRepository, EventMapStructMapper eventMapper, FeedbackMapStructMapper feedbackMapper, SentimentServiceImpl sentimentService, RestTemplate restTemplate) {
+                            FeedbackRepository feedbackRepository, EventMapStructMapper eventMapper, FeedbackMapStructMapper feedbackMapper, SentimentServiceImpl sentimentService) {
         this.eventRepository = eventRepository;
         this.feedbackRepository = feedbackRepository;
         this.eventMapper = eventMapper;

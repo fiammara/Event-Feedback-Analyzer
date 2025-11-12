@@ -12,14 +12,15 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackSummary {
+
+    @Schema(description = "Id of event, related to the feedback summary")
     private Long eventId;
+    @Schema(description = "Title of event, related to the feedback summary")
     private String eventTitle;
+
+    @Schema(description = "Count how many feedbacks are")
     private int feedbackCount;
+    @Schema(description = "Summary of feedback sentiments (POSITIVE, NEUTRAL, NEGATIVE) for an event")
     private Map<String, Integer> sentimentSummary;
 
-  /*  private int totalCount;
-    private int positiveCount;
-    private int negativeCount;
-    private int neutralCount;
-    private double averageSentiment; */
 }

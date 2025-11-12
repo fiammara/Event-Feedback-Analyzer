@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,12 +29,13 @@ import java.util.Optional;
 @Tag(name = DescriptionVariables.EVENT)
 @RestController
 @RequestMapping("/api/events")
-@CrossOrigin(origins = "http://localhost:5173")
 public class EventController {
     private static final Logger log = LoggerFactory.getLogger(EventController.class);
     private final EventService eventService;
 
+
     public EventController(EventService eventService) {
+
         this.eventService = eventService;
     }
 
@@ -46,8 +46,6 @@ public class EventController {
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
-        @ApiResponse(responseCode = "401", description = HTMLResponseMessages.HTTP_401),
-        @ApiResponse(responseCode = "403", description = HTMLResponseMessages.HTTP_403),
         @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
         @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
     })
@@ -91,8 +89,6 @@ public class EventController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HTMLResponseMessages.HTTP_201),
         @ApiResponse(responseCode = "400", description = HTMLResponseMessages.HTTP_400),
-        @ApiResponse(responseCode = "401", description = HTMLResponseMessages.HTTP_401),
-        @ApiResponse(responseCode = "403", description = HTMLResponseMessages.HTTP_403),
         @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
     })
     public ResponseEntity<Event> createEvent(
@@ -113,7 +109,7 @@ public class EventController {
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = HTMLResponseMessages.HTTP_201),
         @ApiResponse(responseCode = "400", description = HTMLResponseMessages.HTTP_400),
-        @ApiResponse(responseCode = "404", description = "Event not found"),
+        @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
         @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
     })
     public ResponseEntity<Feedback> addFeedback(
@@ -129,7 +125,7 @@ public class EventController {
     @Operation(summary = "Get feedback count and sentiment summary for an event")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
-        @ApiResponse(responseCode = "404", description = "Event not found"),
+        @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
         @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
     })
     public ResponseEntity<FeedbackSummary> getFeedbackSummary(@PathVariable Long eventId) {
@@ -137,5 +133,6 @@ public class EventController {
         FeedbackSummary summary = eventService.getFeedbackSummary(eventId);
         return ResponseEntity.ok(summary);
     }
+
 }
 

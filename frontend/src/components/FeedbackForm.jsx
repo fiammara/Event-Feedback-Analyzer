@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { addFeedback } from '../api/api';
 
 export default function FeedbackForm({ eventId, onFeedbackAdded }) {
   const [text, setText] = useState('');
@@ -11,9 +11,9 @@ export default function FeedbackForm({ eventId, onFeedbackAdded }) {
 
     setLoading(true);
     try {
-      const response = await axios.post(`http://localhost:8080/api/events/${eventId}/feedback`, { text });
+      const response = await addFeedback({ text, eventId });
       setText('');
-      onFeedbackAdded(response.data); // notify parent if needed
+      onFeedbackAdded(response);
     } catch (err) {
       console.error('Failed to add feedback', err);
       alert('Failed to add feedback. Check console.');

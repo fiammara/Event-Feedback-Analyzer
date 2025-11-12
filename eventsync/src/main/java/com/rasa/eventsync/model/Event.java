@@ -23,12 +23,14 @@ public class Event {
     @Schema(description = "The title of event")
     @NotBlank(message = "Event title is required")
     private String title;
+    @Schema(description = "The description of event")
     @NotBlank(message = "Description is required")
     private String description;
 
-    @Schema(description = "List of feedback about the event")
+    @Schema(description = "List of feedbacks about the event")
     private List<Feedback> feedbackList = new ArrayList<>();
 
+    @Schema(description = "Time of an event creation")
     private LocalDateTime createdAt = LocalDateTime.now();
 
 }

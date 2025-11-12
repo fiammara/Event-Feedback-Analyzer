@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
-const COLORS = ['#16a34a', '#f59e0b', '#ef4444']; // green, amber, red (tailwind-like)
+const COLORS = ['#16a34a', '#f59e0b', '#ef4444'];
 
 export default function FeedbackSummaryChart({ summary }) {
-  // Support both uppercase keys (POSITIVE) and lowercase (positive)
+
   const s = (summary && summary.sentimentSummary) || {};
   const positive = s.POSITIVE ?? s.positive ?? 0;
   const neutral = s.NEUTRAL ?? s.neutral ?? 0;
   const negative = s.NEGATIVE ?? s.negative ?? 0;
 
-  // Build raw data and filter out zero-valued slices so labels don't overlap
   const raw = [
     { name: 'Positive', value: positive },
     { name: 'Neutral', value: neutral },
@@ -20,7 +19,6 @@ export default function FeedbackSummaryChart({ summary }) {
   const data = raw.filter((d) => d.value > 0);
   const total = data.reduce((s, d) => s + d.value, 0);
 
-  // hooks must always be called in the same order
   const [displayTotal, setDisplayTotal] = useState(0);
   useEffect(() => {
     let raf;
@@ -47,7 +45,6 @@ export default function FeedbackSummaryChart({ summary }) {
     return [`${value} (${percent})`, name];
   };
 
-  // legend will show percentages to avoid drawing labels over the chart
   const legendFormatter = (value, entry) => {
     const val = entry && entry.payload ? entry.payload.value : 0;
     const pct = total > 0 ? `${Math.round((val / total) * 100)}%` : '0%';

@@ -5,19 +5,24 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=docker
       - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
     volumes:
       - ./eventsync/data:/data
     restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        # Leave empty so the built frontend uses relative paths (e.g. /api)
+        VITE_API_BASE: ""
     container_name: event-feedback-frontend
     ports:
       - "3000:80"   # Host 3000 -> Nginx 80
     environment:
-      - REACT_APP_API_BASE=http://backend:8080
+      # Ensure runtime env is empty; frontend will use relative paths and Nginx will proxy /api
+      - VITE_API_BASE=
     depends_on:
       - backend
 

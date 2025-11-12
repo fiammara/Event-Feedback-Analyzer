@@ -155,7 +155,7 @@ export default function EventList({ newEvent }) {
               {event.feedbackList?.length > 0 ? (
                 <ul className="space-y-2 mt-2">
                   {event.feedbackList.map((fb, idx) => {
-                    // Determine sentiment label from several possible keys returned by backend
+
                     const sentiment = (fb.sentiment && (fb.sentiment.label || fb.sentiment)) || fb.sentimentLabel || fb.sentimentResult || fb.label || fb.category || fb.sentiment;
                     const s = (typeof sentiment === 'string' ? sentiment : '') || '';
                     const key = s.toUpperCase();
