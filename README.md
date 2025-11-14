@@ -3,7 +3,7 @@ EventSync Fullstack Application
 Overview
 --------
 EventSync is a fullstack application for managing events and collecting participant feedback, and automatically analyzing the feedback for sentiment.
-It consists of a **Spring Boot backend** and a **React + Vite frontend**. Each submitted feedback is automatically analyzed for sentiment (positive, neutral, negative) using the **Hugging Face API**.
+It consists of a **Spring Boot backend** and a **React + Vite frontend**. Each submitted feedback is automatically analyzed for sentiment (positive, neutral, negative) using the **Hugging Face API** cardiffnlp/twitter-roberta-base-sentiment model.
 
 Features
 --------
@@ -41,7 +41,7 @@ Setup
 4. **Getting a Hugging Face API Token**
    1. Go to [https://huggingface.co](https://huggingface.co) and sign up for an account if you don’t have one.
    2. Click on your profile → **Settings** → **Access Tokens**.
-   3. Click **New Token**, give it a name (e.g., `EventSync Backend`) and select **Write** permissions.
+   3. Click **New Token**, give it a name (e.g., `EventSync Backend`) and select **Write** permission.
    4. Copy the generated token.
    5. Paste it into the `.env` file as `HUGGINGFACE_TOKEN` (see step 3).
 
@@ -66,11 +66,27 @@ Setup
 
 ### Running with Docker (Optional)
 - The project includes a **Dockerfile** and **docker-compose.yml** for easy containerized deployment.
-- You can build and run the app using Docker:
-  ```
-  docker-compose up --build
-  ```
+
+**Important: Environment Setup for Docker**
+1. Create a `.env` file in the **root directory** (same location as `docker-compose.yml`):
+   ```
+   HUGGINGFACE_TOKEN=your_huggingface_api_key_here
+   ```
+   - You can copy `.env.example` as a template: `cp .env.example .env`
+   - Replace `your_token_here` with your actual Hugging Face API token
+
+2. Build and run the app using Docker:
+   ```
+   docker-compose up --build
+   ```
+
+3. Access the application:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8080
+   - Swagger UI: http://localhost:8080/swagger-ui/index.html
+
 - This runs both frontend and backend containers together, making it easy to run outside your local environment.
+- The `.env` file is automatically loaded by Docker Compose and environment variables are passed to the containers.
 
 API Endpoints (Backend)
 ----------------------

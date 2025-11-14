@@ -22,3 +22,4 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+/eventsync/src/main/resources/application-token.properties

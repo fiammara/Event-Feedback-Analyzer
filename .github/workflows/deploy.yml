@@ -1,9 +1,9 @@
-name: CI/CD Deploy
+name: CI/CD Deploy to Railway
 
 on:
   push:
     branches:
-      - main
+      - main  # change if your main branch is named differently
 
 jobs:
   build-and-deploy:
@@ -14,24 +14,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Set environment variables (from GitHub secrets)
-      - name: Set environment
-        run: echo "HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }}" >> $GITHUB_ENV
+      # 2️⃣ Set environment variables (from GitHub Secrets)
+      - name: Set environment variables
+        run: |
+          echo "HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }}" >> $GITHUB_ENV
+          echo "RAILWAY_API_KEY=${{ secrets.RAILWAY_API_KEY }}" >> $GITHUB_ENV
+          echo "SPRING_PROFILES_ACTIVE=docker" >> $GITHUB_ENV
 
       # 3️⃣ Run backend tests with Maven
       - name: Run backend tests
         working-directory: ./backend
-        run: mvn clean test
+        run: ./mvnw clean test
 
-      # 4️⃣ Build Docker images using docker-compose
-      - name: Build Docker images
-        run: docker-compose build
+      # 4️⃣ Login to Railway
+      - name: Login to Railway
+        uses: railwayapp/railway-action@v2
+        with:
+          apiKey: ${{ secrets.RAILWAY_API_KEY }}
 
-      # 5️⃣ Deploy to server
-      - name: Deploy with docker-compose
-        run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            cd /path/to/deploy &&
-            docker-compose pull &&
-            docker-compose up -d --build
-          "
+      # 5️⃣ Deploy to Railway
+      - name: Deploy to Railway
+        run: railway up --detach

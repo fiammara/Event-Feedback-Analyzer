@@ -4,9 +4,10 @@ services:
     container_name: event-feedback-backend
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
     volumes:
       - ./eventsync/data:/data
     restart: unless-stopped

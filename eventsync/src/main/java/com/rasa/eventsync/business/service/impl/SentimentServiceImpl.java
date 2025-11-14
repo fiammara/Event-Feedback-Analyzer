@@ -1,7 +1,8 @@
 package com.rasa.eventsync.business.service.impl;
 
 import com.rasa.eventsync.business.service.SentimentService;
-import io.github.cdimascio.dotenv.Dotenv;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import java.util.Map;
 public class SentimentServiceImpl implements SentimentService {
 
     private final RestTemplate restTemplate;
+    @Value("${HUGGINGFACE_TOKEN}")
     private String hfApiToken;
 
     public SentimentServiceImpl(RestTemplate restTemplate) {
@@ -23,16 +25,14 @@ public class SentimentServiceImpl implements SentimentService {
     }
 
     private void ensureToken() {
-        if (hfApiToken == null) {
-            Dotenv dotenv = Dotenv.load();
-            hfApiToken = dotenv.get("HUGGINGFACE_TOKEN");
+        if (hfApiToken == null || hfApiToken.isEmpty()) {
+            hfApiToken = System.getenv("HUGGINGFACE_TOKEN");
+            System.out.println("HUGGINGFACE_TOKEN=" + hfApiToken);
             if (hfApiToken == null || hfApiToken.isEmpty()) {
-                throw new IllegalStateException("HUGGINGFACE_TOKEN not found in .env");
+                throw new IllegalStateException("HUGGINGFACE_TOKEN missing in environment");
             }
         }
     }
-
-
     @Override
     public String analyzeSentiment(String text) {
         ensureToken();
