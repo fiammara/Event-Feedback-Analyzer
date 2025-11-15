@@ -1,9 +1,5 @@
 package com.rasa.eventsync;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.rasa.eventsync.business.handlers.EventNotFoundException;
 import com.rasa.eventsync.business.mappers.EventMapStructMapper;
 import com.rasa.eventsync.business.mappers.FeedbackMapStructMapper;
@@ -23,9 +19,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceTests {
@@ -152,9 +156,12 @@ class EventServiceTests {
 
     @Test
     void getFeedbackSummary_shouldReturnCorrectCounts() {
-        Feedback f1 = new Feedback(); f1.setSentiment("POSITIVE");
-        Feedback f2 = new Feedback(); f2.setSentiment("POSITIVE");
-        Feedback f3 = new Feedback(); f3.setSentiment("NEGATIVE");
+        Feedback f1 = new Feedback();
+        f1.setSentiment("POSITIVE");
+        Feedback f2 = new Feedback();
+        f2.setSentiment("POSITIVE");
+        Feedback f3 = new Feedback();
+        f3.setSentiment("NEGATIVE");
 
         Event event = new Event();
         event.setId(1L);

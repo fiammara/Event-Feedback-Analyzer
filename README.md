@@ -2,123 +2,157 @@ EventSync Fullstack Application
 
 Overview
 --------
-EventSync is a fullstack application for managing events and collecting participant feedback, and automatically analyzing the feedback for sentiment.
-It consists of a **Spring Boot backend** and a **React + Vite frontend**. Each submitted feedback is automatically analyzed for sentiment (positive, neutral, negative) using the **Hugging Face API** cardiffnlp/twitter-roberta-base-sentiment model.
+# EventSync Fullstack Application
 
-Features
---------
-- Create events (title + description)
-- View all events and their feedback
-- Submit feedback for a specific event
-- Automatically receive feedback analysis from the Hugging Face API
-- View feedback count and sentiment summary per event
-- Interact with the app via the frontend web interface
-- Access API documentation via **Swagger/OpenAPI**
+### Live Demo (For Users)
 
-Setup
------
+**Frontend:** [https://frontend-ic47.onrender.com](https://frontend-ic47.onrender.com)
+> **Note:** The app may take a few seconds to load because it’s running on a free-tier hosting plan. Thanks for your patience!
+
+### What You Can Do
+
+- Create and view events
+- Submit feedback for events
+- Automatically get sentiment analysis of the feedback (positive, neutral, negative)
+- View feedback counts and sentiment summaries per event
+
+---
+
+### The App For Managing Events With AI-Driven Sentiment Insights
+
+EventSync is a fullstack application for managing events and collecting participant feedback. Each feedback is automatically analyzed for sentiment using the Hugging Face `cardiffnlp/twitter-roberta-base-sentiment` AI model.
+
+**Tech Stack:**
+- Backend: **Spring Boot**
+- Frontend: **React + Vite**
+- Database: **H2**
+- Sentiment analysis via **Hugging Face API**
+
+---
+
+### Feedback Summary
+
+- Each event has a **feedback list** and **summary section**
+- Summary updates automatically when feedback is added
+- Includes **pie chart** for sentiment statistics
+
+---
+# Setup for developers
+
+Important:
+Before running/testing the application, create the following files:
+
+1. **Backend `.env`** (at the root of the repository)
+
+```env
+HUGGINGFACE_TOKEN=your_secret_token_here
+```
+
+2. **Backend `application-token.properties`** (root or backend folder) — **same content as `.env`**
+
+```properties
+HUGGINGFACE_TOKEN=your_secret_token_here
+```
+
+3. **Frontend `env.local`** (inside `frontend` folder)
+
+```env
+VITE_API_BASE=http://localhost:8080
+```
+
+### How to Get the Hugging Face Token
+
+1. Go to [Hugging Face](https://huggingface.co) and create an account.
+2. Click your profile → **Settings → Access Tokens**.
+3. Click **New Token**, give it a name (e.g., `sentiment`), and select **Write** permission.
+4. Copy the token and place it in `.env` and `application-token.properties` as shown above.
+
+---
+
+## Setting Up and Running the App Locally
+
 ### Backend (Spring Boot)
+
 1. Clone the repository:
-   git clone https://github.com/fiammara/Event-Feedback-Analyzer.git
-   cd eventsync/backend
 
-2. Install dependencies and run:
-   Make sure you have Java 17+ and Maven installed.
-   mvn clean install
-   mvn spring-boot:run
+```bash
+git clone https://github.com/fiammara/Event-Feedback-Analyzer.git
+```
 
-   - The backend will start on http://localhost:8080
-   - H2 console available at http://localhost:8080/h2-console
-     (JDBC URL: jdbc:h2:mem:testdb, user: sa, password: empty)
+2. Build and run the backend:
 
-3. **Environment configuration**
-   - A `.env.local` file is required for the Hugging Face API key:
-     ```
-     HUGGINGFACE_TOKEN=your_huggingface_api_key_here
-     ```
-   - Place it in the backend folder before running the app.
+```bash
+cd eventsync
+mvn clean install
+mvn spring-boot:run
+```
 
-4. **Getting a Hugging Face API Token**
-   1. Go to [https://huggingface.co](https://huggingface.co) and sign up for an account if you don’t have one.
-   2. Click on your profile → **Settings** → **Access Tokens**.
-   3. Click **New Token**, give it a name (e.g., `EventSync Backend`) and select **Write** permission.
-   4. Copy the generated token.
-   5. Paste it into the `.env` file as `HUGGINGFACE_TOKEN` (see step 3).
+- Backend runs at: `http://localhost:8080`
+- H2 console: `http://localhost:8080/h2-console`  
+  (JDBC URL: `jdbc:h2:mem:testdb`, user: `sa`, password: empty)
+
+---
 
 ### Frontend (React + Vite)
-1. Navigate to frontend directory:
-   cd ../frontend
+
+1. Navigate to frontend:
+
+```bash
+cd frontend
+```
 
 2. Install dependencies:
-   npm install
 
-3. Run the development server:
-   npm run dev
+```bash
+npm install
+```
 
-   - The frontend will start on http://localhost:5173
-   - It communicates with the backend for events and feedback
+3. Run development server:
 
-4. **Frontend environment configuration**
-   - A `.env` file may be required for API URL:
-     ```
-     VITE_API_BASE=http://localhost:8080
-     ```
+```bash
+npm run dev
+```
 
-### Running with Docker (Optional)
-- The project includes a **Dockerfile** and **docker-compose.yml** for easy containerized deployment.
+- Frontend runs at: `http://localhost:5173`
+- Uses backend URL from `env.local`
 
-**Important: Environment Setup for Docker**
-1. Create a `.env` file in the **root directory** (same location as `docker-compose.yml`):
-   ```
-   HUGGINGFACE_TOKEN=your_huggingface_api_key_here
-   ```
-   - You can copy `.env.example` as a template: `cp .env.example .env`
-   - Replace `your_token_here` with your actual Hugging Face API token
+---
 
-2. Build and run the app using Docker:
-   ```
-   docker-compose up --build
-   ```
+## Optional: Local Docker Setup
 
-3. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8080
-   - Swagger UI: http://localhost:8080/swagger-ui/index.html
+1. Ensure `.env` file exists in the project root and contains the line HUGGINGFACE_TOKEN= with your token value.
+2. Build and run containers:
 
-- This runs both frontend and backend containers together, making it easy to run outside your local environment.
-- The `.env` file is automatically loaded by Docker Compose and environment variables are passed to the containers.
+```bash
+docker-compose up --build
+```
 
-API Endpoints (Backend)
-----------------------
+3. Access the app:
+
+`http://localhost:3000`
+
+---
+
+## API Endpoints
+
 Base path: `/api/events`
 
-1. `GET /api/events/{id}` — Get event by ID
-2. `GET /api/events` — List all events
-3. `POST /api/events` — Create a new event
-4. `POST /api/events/{eventId}/feedback` — Add feedback to an event
-5. `GET /api/events/{eventId}/feedback/summary` — Get feedback count and sentiment summary
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `/api/events` | List all events |
+| GET    | `/api/events/{id}` | Get event by ID |
+| POST   | `/api/events` | Create new event |
+| POST   | `/api/events/{eventId}/feedback` | Submit feedback for an event |
+| GET    | `/api/events/{eventId}/feedback/summary` | Feedback count & sentiment summary |
 
-- Swagger/OpenAPI documentation is available at `/swagger-ui.html` or `/swagger-ui/index.html` depending on Spring Boot version
+- Swagger/OpenAPI docs: `/swagger-ui.html` or `/swagger-ui/index.html`
 
-Feedback summary
---------------------
-- Each event might have a **feedback list** and a **summary section**.
-- If no feedback has been submitted, the summary section is **empty**.
-- Once feedback is added, the summary section **updates automatically**.
-- The summary includes a **pie chart** showing the proportion of different sentiment types for that event.
-- Sentiment analysis is performed automatically by the **Hugging Face API**, and the results are stored with each feedback entry.
+---
 
-Testing
--------
-- Backend: unit and integration tests are implemented using test classes
-- Frontend is not tested at this stage
-- Swagger/OpenAPI can be used for backend API docs
+## Notes
 
-Notes
------
-- Backend uses in-memory H2 database; data resets on restart
-- For persistent storage, configure a real database in application.properties
+- Backend uses **in-memory H2 database**; data resets on restart
+- For persistent storage, configure a real database in `application.properties`
 - Frontend and backend communicate via REST API
-- This project uses npm for frontend; Yarn references have been removed for clarity
-- Application can run locally or in Docker containers for deployment
-
+- Uses npm for frontend
+- CI workflow builds backend and frontend automatically; deployment is **manual**  

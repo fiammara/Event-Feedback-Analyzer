@@ -1,11 +1,9 @@
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_BASE || '';
-//const BASE_URL = 'http://localhost:8080';
 
-// Configure axios with CORS settings
 const axiosInstance = axios.create({
-  // If BASE_URL is empty we use relative paths so requests go to same origin (e.g. /api/...)
+
   baseURL: BASE_URL || '',
   headers: {
     'Content-Type': 'application/json',

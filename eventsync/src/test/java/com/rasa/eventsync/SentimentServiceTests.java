@@ -1,5 +1,6 @@
 package com.rasa.eventsync;
 
+import com.rasa.eventsync.business.handlers.SentimentAnalysisException;
 import com.rasa.eventsync.business.service.impl.SentimentServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class SentimentServiceTests {
+class SentimentServiceTests {
+
     @Mock
     private RestTemplate restTemplate;
 
@@ -33,14 +35,12 @@ public class SentimentServiceTests {
 
     @BeforeEach
     void setup() {
-
         sentimentService = Mockito.spy(new SentimentServiceImpl(restTemplate));
         ReflectionTestUtils.setField(sentimentService, "hfApiToken", "dummy-token");
     }
 
     @Test
     void analyzeSentiment_shouldReturnLabel_fromMapResponse() {
-
         Map<String, Object> prediction = Map.of("label", "POSITIVE", "score", 0.95);
         List<Object> response = List.of(prediction);
 
@@ -68,34 +68,36 @@ public class SentimentServiceTests {
     }
 
     @Test
-    void analyzeSentiment_shouldThrowException_whenEmptyResponse() {
+    void analyzeSentiment_shouldThrowSentimentAnalysisException_whenEmptyResponse() {
         when(restTemplate.postForObject(anyString(), any(), eq(Object.class)))
             .thenReturn(List.of());
 
-        RuntimeException ex = assertThrows(RuntimeException.class,
+        SentimentAnalysisException ex = assertThrows(SentimentAnalysisException.class,
             () -> sentimentService.analyzeSentiment("Test"));
 
-        assertTrue(ex.getMessage().contains("empty result"));
+        assertEquals("Hugging Face sentiment analysis returned empty result", ex.getMessage());
     }
 
     @Test
-    void analyzeSentiment_shouldThrowHttpClientErrorException() {
+    void analyzeSentiment_shouldThrowSentimentAnalysisException_whenHttpClientError() {
         when(restTemplate.postForObject(anyString(), any(), eq(Object.class)))
             .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad request"));
 
-        assertThrows(HttpClientErrorException.class,
+        SentimentAnalysisException ex = assertThrows(SentimentAnalysisException.class,
             () -> sentimentService.analyzeSentiment("Test"));
+
+        assertTrue(ex.getMessage().contains("HTTP error"));
+        assertTrue(ex.getCause() instanceof HttpClientErrorException);
     }
 
     @Test
-    void analyzeSentiment_shouldThrowException_whenNullResponse() {
+    void analyzeSentiment_shouldThrowSentimentAnalysisException_whenNullResponse() {
         when(restTemplate.postForObject(anyString(), any(), eq(Object.class)))
             .thenReturn(null);
 
-        RuntimeException ex = assertThrows(RuntimeException.class,
+        SentimentAnalysisException ex = assertThrows(SentimentAnalysisException.class,
             () -> sentimentService.analyzeSentiment("Test"));
 
-        assertTrue(ex.getMessage().contains("empty result"));
+        assertEquals("Hugging Face sentiment analysis returned empty result", ex.getMessage());
     }
 }
-

@@ -208,7 +208,7 @@ class EventControllerTests {
 
     @Test
     void createEvent_shouldReturn400_whenMalformedJson() throws Exception {
-        String badJson = "{ \"title\": \"Event\", \"description\": \"Desc\""; // missing closing }
+        String badJson = "{ \"title\": \"Event\", \"description\": \"Desc\"";
 
         mockMvc.perform(post("/api/events")
                 .contentType(MediaType.APPLICATION_JSON)

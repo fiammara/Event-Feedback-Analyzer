@@ -1,0 +1,45 @@
+name: CI (Backend + Frontend)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Set environment variables from GitHub Secrets (for build/tests)
+      - name: Set environment variables
+        run: |
+          echo "HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }}" >> $GITHUB_ENV
+          echo "SPRING_PROFILES_ACTIVE=docker" >> $GITHUB_ENV
+
+      # 3️⃣ Build backend
+      - name: Build backend JAR
+        working-directory: ./backend
+        run: ./mvnw clean package -DskipTests
+
+      # 4️⃣ Build frontend
+      - name: Build frontend
+        working-directory: ./frontend
+        run: |
+          npm install
+          npm run build
+
+      # 5️⃣ (Optional) Run backend tests
+      - name: Run backend tests
+        working-directory: ./backend
+        run: ./mvnw test
+
+      # 6️⃣ (Optional) Run frontend tests
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test
