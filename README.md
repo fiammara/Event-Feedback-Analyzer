@@ -1,7 +1,4 @@
-EventSync Fullstack Application
 
-Overview
---------
 # EventSync Fullstack Application
 
 ### Live Demo (For Users)
