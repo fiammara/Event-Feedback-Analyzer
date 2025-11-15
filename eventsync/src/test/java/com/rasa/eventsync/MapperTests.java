@@ -39,7 +39,6 @@ class MapperTests {
         eventDAO.setDescription("Description");
         eventDAO.setFeedbackList(List.of(feedbackDAO));
 
-
         Event event = eventMapper.eventDAOToEvent(eventDAO);
 
         assertEquals(eventDAO.getId(), event.getId());
@@ -61,7 +60,6 @@ class MapperTests {
         event.setId(20L);
         event.setTitle("Test Event");
         event.setFeedbackList(List.of(feedback));
-
 
         EventDAO dao = eventMapper.eventToDAO(event);
 

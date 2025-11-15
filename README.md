@@ -3,8 +3,8 @@
 
 ### Live Demo (For Users)
 
-**Frontend:** [https://frontend-ic47.onrender.com](https://frontend-ic47.onrender.com)
-> **Note:** The app may take a few seconds to load because it’s running on a free-tier hosting plan. Thanks for your patience!
+ [https://frontend-ic47.onrender.com](https://frontend-ic47.onrender.com)
+> **Note:** The app may take a few minutes to load because it’s running on a free-tier hosting plan. Thanks for your patience!
 
 ### What You Can Do
 

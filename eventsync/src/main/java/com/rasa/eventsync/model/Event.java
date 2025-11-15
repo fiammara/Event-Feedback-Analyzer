@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event {
-
     @Schema(description = "The unique id of the event")
     private Long id;
 

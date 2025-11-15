@@ -1,6 +1,3 @@
--- V1__create_events_and_feedback_tables.sql
-
--- Create events table
 CREATE TABLE events (
     id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -8,7 +5,6 @@ CREATE TABLE events (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create feedback table
 CREATE TABLE feedback (
     id BIGSERIAL PRIMARY KEY,
     event_id BIGINT NOT NULL,

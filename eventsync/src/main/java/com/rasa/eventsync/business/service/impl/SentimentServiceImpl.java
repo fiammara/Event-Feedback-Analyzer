@@ -18,8 +18,11 @@ import java.util.Map;
 
 @Service
 public class SentimentServiceImpl implements SentimentService {
+
     private static final Logger log = LoggerFactory.getLogger(SentimentServiceImpl.class);
+
     private final RestTemplate restTemplate;
+
     @Value("${HUGGINGFACE_TOKEN}")
     private String hfApiToken;
 

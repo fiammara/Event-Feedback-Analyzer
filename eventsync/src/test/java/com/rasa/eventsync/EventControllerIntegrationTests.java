@@ -45,7 +45,6 @@ class EventControllerIntegrationTests {
     void setup() {
         feedbackRepository.deleteAll();
         eventRepository.deleteAll();
-
     }
 
     @Test
@@ -68,7 +67,6 @@ class EventControllerIntegrationTests {
         mockMvc.perform(get("/api/events"))
             .andExpect(status().isNoContent());
     }
-
 
     @Test
     void getEventById_shouldReturn404_whenNotFound() throws Exception {

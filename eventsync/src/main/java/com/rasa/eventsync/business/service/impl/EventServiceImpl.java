@@ -88,7 +88,6 @@ public class EventServiceImpl implements EventService {
         return feedbackMapper.feedbackDAOToFeedback(savedDAO);
     }
 
-
     @Override
     public FeedbackSummary getFeedbackSummary(Long eventId) {
 

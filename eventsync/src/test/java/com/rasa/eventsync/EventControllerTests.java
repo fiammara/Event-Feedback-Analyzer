@@ -44,7 +44,6 @@ class EventControllerTests {
     @MockitoBean
     private EventService eventService;
 
-
     private Event createSampleEvent(Long id, String title, String description) {
         Event e = new Event();
         e.setId(id);
@@ -52,7 +51,6 @@ class EventControllerTests {
         e.setDescription(description);
         return e;
     }
-
 
     @Test
     void getEventById_shouldReturnEvent_whenEventExists() throws Exception {
@@ -96,7 +94,6 @@ class EventControllerTests {
         mockMvc.perform(get(BASE_URL))
             .andExpect(status().isNoContent());
     }
-
 
     @Test
     void createEvent_shouldReturnCreated_whenValid() throws Exception {
@@ -162,7 +159,6 @@ class EventControllerTests {
         Mockito.verify(eventService).getFeedbackSummary(1L);
     }
 
-
     @Test
     void addFeedback_shouldReturn404_whenEventNotFound() throws Exception {
         Feedback feedbackRequest = new Feedback();
@@ -185,6 +181,7 @@ class EventControllerTests {
         mockMvc.perform(get(BASE_URL + "/42/feedback/summary"))
             .andExpect(status().isNotFound());
     }
+
     @Test
     void createEvent_shouldReturn400_whenInvalidRequest() throws Exception {
         Event invalid = new Event();
