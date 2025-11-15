@@ -10,7 +10,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class Config {
 
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

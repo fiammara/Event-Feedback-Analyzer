@@ -30,7 +30,6 @@ public class EventServiceImpl implements EventService {
     private final FeedbackMapStructMapper feedbackMapper;
     private final SentimentServiceImpl sentimentService;
 
-
     public EventServiceImpl(EventRepository eventRepository,
                             FeedbackRepository feedbackRepository, EventMapStructMapper eventMapper, FeedbackMapStructMapper feedbackMapper, SentimentServiceImpl sentimentService) {
         this.eventRepository = eventRepository;
@@ -62,6 +61,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Optional<Event> findEventById(Long id) {
+
         Optional<Event> eventOptional =
             eventRepository.findById(id)
                 .map(eventMapper::eventDAOToEvent);
@@ -72,6 +72,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Feedback addFeedback(Long eventId, Feedback feedback) {
+
         EventDAO eventDAO = eventRepository.findById(eventId)
             .orElseThrow(() -> new EventNotFoundException("Event not found with id: " + eventId));
 

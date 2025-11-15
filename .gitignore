@@ -21,5 +21,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Tokens
 .env
 /eventsync/src/main/resources/application-token.properties
+
+# Database files
+/eventsync/data/

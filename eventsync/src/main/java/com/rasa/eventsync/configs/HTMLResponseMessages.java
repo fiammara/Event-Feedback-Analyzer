@@ -1,9 +1,11 @@
 package com.rasa.eventsync.configs;
 
 public final class HTMLResponseMessages {
+
     private HTMLResponseMessages() {}
     public static final String HTTP_200 = "Successful request gets this response code and returns requested data. " +
         "Example data can be seen below";
+
     public static final String HTTP_201 = "Successful request saves posted data and returns that data with this " +
         "response code. Example data can be seen below";
 

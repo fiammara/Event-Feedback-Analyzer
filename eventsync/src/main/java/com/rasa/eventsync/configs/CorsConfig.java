@@ -1,11 +1,11 @@
 package com.rasa.eventsync.configs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,16 +43,15 @@ public class CorsConfig implements WebMvcConfigurer {
             log.info("Using default CORS origins");
         }
 
-
         String[] originsArray = origins.toArray(new String[0]);
 
         registry.addMapping("/**")
-                .allowedOrigins(originsArray)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")
-                .allowedHeaders("*")
-                .exposedHeaders("*")
-                .allowCredentials(true)
-                .maxAge(3600);
+            .allowedOrigins(originsArray)
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")
+            .allowedHeaders("*")
+            .exposedHeaders("*")
+            .allowCredentials(true)
+            .maxAge(3600);
 
         log.info("CORS configuration complete with {} allowed origins", origins.size());
     }

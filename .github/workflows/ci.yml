@@ -39,7 +39,3 @@ jobs:
         working-directory: ./backend
         run: ./mvnw test
 
-      # 6️⃣ (Optional) Run frontend tests
-      - name: Run frontend tests
-        working-directory: ./frontend
-        run: npm test

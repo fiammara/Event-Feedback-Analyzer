@@ -1,0 +1,19 @@
+-- V1__create_events_and_feedback_tables.sql
+
+-- Create events table
+CREATE TABLE events (
+    id BIGSERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(2000),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create feedback table
+CREATE TABLE feedback (
+    id BIGSERIAL PRIMARY KEY,
+    event_id BIGINT NOT NULL,
+    text VARCHAR(2000),
+    sentiment VARCHAR(50),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_event FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
+);

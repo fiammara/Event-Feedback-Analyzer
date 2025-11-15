@@ -9,7 +9,6 @@ import com.rasa.eventsync.model.FeedbackSummary;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -30,25 +29,23 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
+
     private static final Logger log = LoggerFactory.getLogger(EventController.class);
     private final EventService eventService;
 
-
     public EventController(EventService eventService) {
-
         this.eventService = eventService;
     }
 
-
     @Operation(
         summary = "Find event by ID",
-        description = "Returns an event for the given ID"
+        description = "Returns an event for the given ID",
+        responses = {
+            @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
+            @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
+            @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
+        }
     )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
-        @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
-        @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
-    })
     @GetMapping("/{id}")
     public ResponseEntity<Event> getEventById(
         @Parameter(description = "ID of the event to retrieve", required = true)
@@ -61,15 +58,15 @@ public class EventController {
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping
     @Operation(
         summary = "List all events",
-        description = "Retrieve all events."
+        description = "Retrieve all events.",
+        responses = {
+            @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
+            @ApiResponse(responseCode = "204", description = HTMLResponseMessages.HTTP_204)
+        }
     )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
-        @ApiResponse(responseCode = "204", description = HTMLResponseMessages.HTTP_204)
-    })
+    @GetMapping
     public ResponseEntity<List<Event>> getAllEvents() {
         log.info("Fetching all events");
 
@@ -81,16 +78,16 @@ public class EventController {
         return ResponseEntity.ok(events);
     }
 
-    @PostMapping
     @Operation(
         summary = "Create a new event",
-        description = "Creates a new event and returns the created entity."
+        description = "Creates a new event and returns the created entity.",
+        responses = {
+            @ApiResponse(responseCode = "201", description = HTMLResponseMessages.HTTP_201),
+            @ApiResponse(responseCode = "400", description = HTMLResponseMessages.HTTP_400),
+            @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
+        }
     )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = HTMLResponseMessages.HTTP_201),
-        @ApiResponse(responseCode = "400", description = HTMLResponseMessages.HTTP_400),
-        @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
-    })
+    @PostMapping
     public ResponseEntity<Event> createEvent(
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             description = "Event object to create",
@@ -104,14 +101,17 @@ public class EventController {
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
+    @Operation(
+        summary = "Add feedback to an event",
+        description = "Adds a new feedback to the specified event",
+        responses = {
+            @ApiResponse(responseCode = "201", description = HTMLResponseMessages.HTTP_201),
+            @ApiResponse(responseCode = "400", description = HTMLResponseMessages.HTTP_400),
+            @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
+            @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
+        }
+    )
     @PostMapping("/{eventId}/feedback")
-    @Operation(summary = "Add feedback to an event", description = "Adds a new feedback to the specified event")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "201", description = HTMLResponseMessages.HTTP_201),
-        @ApiResponse(responseCode = "400", description = HTMLResponseMessages.HTTP_400),
-        @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
-        @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
-    })
     public ResponseEntity<Feedback> addFeedback(
         @PathVariable Long eventId,
         @Valid @RequestBody Feedback feedback) {
@@ -121,13 +121,15 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @Operation(
+        summary = "Get feedback count and sentiment summary for an event",
+        responses = {
+            @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
+            @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
+            @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
+        }
+    )
     @GetMapping("/{eventId}/feedback/summary")
-    @Operation(summary = "Get feedback count and sentiment summary for an event")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = HTMLResponseMessages.HTTP_200),
-        @ApiResponse(responseCode = "404", description = HTMLResponseMessages.HTTP_404),
-        @ApiResponse(responseCode = "500", description = HTMLResponseMessages.HTTP_500)
-    })
     public ResponseEntity<FeedbackSummary> getFeedbackSummary(@PathVariable Long eventId) {
 
         FeedbackSummary summary = eventService.getFeedbackSummary(eventId);

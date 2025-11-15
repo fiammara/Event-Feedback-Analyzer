@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
         }
         return ResponseEntity.badRequest().body(errors);
     }
+
     @ExceptionHandler(ChangeSetPersister.NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(ChangeSetPersister.NotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
@@ -43,6 +44,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(errors);
     }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
         String message = "Malformed JSON request";
@@ -55,6 +57,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body("An unexpected error occurred: " + ex.getMessage());
     }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException ex) {
         String message = "Missing required query parameter: " + ex.getParameterName();
@@ -67,6 +70,7 @@ public class GlobalExceptionHandler {
         String expectedType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
         return ResponseEntity.badRequest().body("Invalid value for parameter '" + param + "'. Expected type: " + expectedType);
     }
+
     @ExceptionHandler(EventNotFoundException.class)
     public ResponseEntity<String> handleEventNotFound(EventNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)

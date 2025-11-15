@@ -15,14 +15,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Event {
 
     @Schema(description = "The unique id of the event")
     private Long id;
+
     @Schema(description = "The title of event")
     @NotBlank(message = "Event title is required")
     private String title;
+
     @Schema(description = "The description of event")
     @NotBlank(message = "Description is required")
     private String description;

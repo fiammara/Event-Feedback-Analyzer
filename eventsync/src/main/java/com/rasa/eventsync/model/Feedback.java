@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-
 @Schema(description = "Model of event feedback ")
 @Data
 @NoArgsConstructor
