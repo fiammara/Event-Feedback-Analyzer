@@ -61,6 +61,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Optional<Event> findEventById(Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Event ID must be a positive number");
+        }
 
         Optional<Event> eventOptional =
             eventRepository.findById(id)
