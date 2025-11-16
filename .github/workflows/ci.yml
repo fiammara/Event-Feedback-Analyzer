@@ -16,26 +16,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set environment variables from GitHub Secrets (for build/tests)
+      # 2️⃣ Set environment variables from GitHub Secrets
       - name: Set environment variables
         run: |
           echo "HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }}" >> $GITHUB_ENV
           echo "SPRING_PROFILES_ACTIVE=docker" >> $GITHUB_ENV
 
-      # 3️⃣ Build backend
+      # 3️⃣ Make Maven wrapper executable
+      - name: Make Maven wrapper executable
+        working-directory: ./eventsync
+        run: chmod +x ./mvnw
+
+      # 4️⃣ Run backend tests
+      - name: Run backend tests
+        working-directory: ./eventsync
+        run: ./mvnw test
+
+      # 5️⃣ Optional: Upload test reports
+      - name: Upload test reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-test-results
+          path: eventsync/target/surefire-reports
+
+      # 6️⃣ Build backend JAR (only if tests pass)
       - name: Build backend JAR
         working-directory: ./eventsync
         run: ./mvnw clean package -DskipTests
 
-      # 4️⃣ Build frontend
+      # 7️⃣ Build frontend
       - name: Build frontend
         working-directory: ./frontend
         run: |
           npm install
           npm run build
-
-      # 5️⃣ (Optional) Run backend tests
-      - name: Run backend tests
-        working-directory: ./eventsync
-        run: ./mvnw test
-
