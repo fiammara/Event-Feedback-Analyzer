@@ -36,6 +36,6 @@ jobs:
 
       # 5️⃣ (Optional) Run backend tests
       - name: Run backend tests
-        working-directory: ./backend
+        working-directory: ./eventsync
         run: ./mvnw test
 
