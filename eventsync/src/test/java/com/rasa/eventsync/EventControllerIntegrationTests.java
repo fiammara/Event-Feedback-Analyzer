@@ -161,7 +161,7 @@ class EventControllerIntegrationTests {
 
     @Test
     void fullCrudCycle_shouldWork_withMultipleFeedbacks() throws Exception {
-        // Create event
+
         Event event = new Event();
         event.setTitle("Full Cycle Event");
         event.setDescription("Testing full flow");
@@ -176,7 +176,7 @@ class EventControllerIntegrationTests {
         Event createdEvent = objectMapper.readValue(response, Event.class);
         Long eventId = createdEvent.getId();
 
-        // Add multiple feedbacks
+
         Feedback feedback1 = new Feedback();
         feedback1.setText("Amazing!");
         mockMvc.perform(post("/api/events/" + eventId + "/feedback")
@@ -191,12 +191,11 @@ class EventControllerIntegrationTests {
                 .content(objectMapper.writeValueAsString(feedback2)))
             .andExpect(status().isCreated());
 
-        // Get feedback summary
+
         mockMvc.perform(get("/api/events/" + eventId + "/feedback/summary"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.feedbackCount").value(2));
 
-        // Get event with feedbacks
         mockMvc.perform(get("/api/events/" + eventId))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.title").value("Full Cycle Event"))

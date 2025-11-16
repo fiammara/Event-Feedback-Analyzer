@@ -39,8 +39,6 @@ class RepositoryTests {
         savedEvent = eventRepository.save(event);
     }
 
-    // ----------------- EventRepository Tests -----------------
-
     @Test
     void saveAndFindEvent() {
         Optional<EventDAO> found = eventRepository.findById(savedEvent.getId());
@@ -54,8 +52,6 @@ class RepositoryTests {
         assertFalse(events.isEmpty());
         assertEquals(savedEvent.getTitle(), events.get(0).getTitle());
     }
-
-    // ----------------- FeedbackRepository Tests -----------------
 
     @Test
     void saveAndFindFeedback() {
@@ -94,8 +90,6 @@ class RepositoryTests {
         EventDAO eventFromDb = eventRepository.findById(savedEvent.getId()).orElseThrow();
         assertTrue(eventFromDb.getFeedbackList().contains(feedback));
     }
-
-    // ----------------- Merged from EventRepositoryIntegrationTests -----------------
 
     @Test
     void saveEvent_shouldPersistEvent() {
