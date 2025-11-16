@@ -10,47 +10,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Set environment variables
       - name: Set environment variables
         run: |
           echo "HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }}" >> $GITHUB_ENV
           echo "SPRING_PROFILES_ACTIVE=docker" >> $GITHUB_ENV
-          # Use absolute path inside workspace
           echo "DATA_DIR=${GITHUB_WORKSPACE}/eventsync/data" >> $GITHUB_ENV
 
-      # 3. Make Maven wrapper executable
       - name: Make Maven wrapper executable
         working-directory: ./eventsync
         run: chmod +x ./mvnw
 
-      # 4. Prepare data folder (correct path!)
       - name: Prepare data folder
-        run: mkdir -p data && touch data/testdb.mv
+        working-directory: ./eventsync
+        run: mkdir -p data
 
-      # 5. Run backend tests
       - name: Run backend tests
         working-directory: ./eventsync
-        run: ./mvnw test
+        run: ./mvnw test -Dspring.profiles.active=test
 
-      # 6. Upload test reports (always, even on failure)
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: backend-test-results
-          path: ${{ github.workspace }}/eventsync/target/surefire-reports/
+          path: eventsync/target/surefire-reports
 
-      # 7. Build backend JAR (only if tests pass)
       - name: Build backend JAR
         if: success()
         working-directory: ./eventsync
         run: ./mvnw clean package -DskipTests
 
-      # 8. Build frontend (only if backend builds)
       - name: Build frontend
         if: success()
         working-directory: ./frontend
