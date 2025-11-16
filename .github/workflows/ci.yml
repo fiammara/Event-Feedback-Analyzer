@@ -24,7 +24,7 @@ jobs:
 
       # 3️⃣ Build backend
       - name: Build backend JAR
-        working-directory: ./backend
+        working-directory: ./eventsync
         run: ./mvnw clean package -DskipTests
 
       # 4️⃣ Build frontend
