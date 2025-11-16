@@ -21,30 +21,36 @@ jobs:
         run: |
           echo "HUGGINGFACE_TOKEN=${{ secrets.HUGGINGFACE_TOKEN }}" >> $GITHUB_ENV
           echo "SPRING_PROFILES_ACTIVE=docker" >> $GITHUB_ENV
+          echo "DATA_DIR=${GITHUB_WORKSPACE}/eventsync/data" >> $GITHUB_ENV
 
       # 3️⃣ Make Maven wrapper executable
       - name: Make Maven wrapper executable
         working-directory: ./eventsync
         run: chmod +x ./mvnw
 
-      # 4️⃣ Run backend tests
+      # 4️⃣ Prepare gitignored data folder
+      - name: Prepare data folder
+        working-directory: ./eventsync
+        run: mkdir -p data
+
+      # 5️⃣ Run backend tests
       - name: Run backend tests
         working-directory: ./eventsync
         run: ./mvnw test
 
-      # 5️⃣ Optional: Upload test reports
+      # 6️⃣ Upload backend test reports
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:
           name: backend-test-results
           path: eventsync/target/surefire-reports
 
-      # 6️⃣ Build backend JAR (only if tests pass)
+      # 7️⃣ Build backend JAR (only if tests pass)
       - name: Build backend JAR
         working-directory: ./eventsync
         run: ./mvnw clean package -DskipTests
 
-      # 7️⃣ Build frontend
+      # 8️⃣ Build frontend
       - name: Build frontend
         working-directory: ./frontend
         run: |
